@@ -35,7 +35,7 @@ def letter_op(long_str, num=1):
 
 
 t_1 = time.perf_counter()
-str_1 = 'a' * 10000
+str_1 = 'asdfg12hsagF'
 letter_op(str_1, 1)
 t_2 = time.perf_counter()
 print(t_2 - t_1)
