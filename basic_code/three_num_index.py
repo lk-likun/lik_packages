@@ -26,6 +26,5 @@ def test(ls, n):
 
 list_num = [3, 5, 4, 7, 6]
 num = 13
-# x = two_sum_index(list_num, num)
 x = test(list_num, num)
 print(x)
