@@ -1,3 +1,5 @@
+import string
+
 import MySQLdb
 import numpy as np
 import pandas as pd
@@ -71,10 +73,11 @@ class DB:
             with conn.cursor() as cs:
                 if insert_res:
                     insert_str = ','.join(insert_list)
-                    insert_res_str = ','.join([str(i) for i in insert_res])
-                sql = f'insert into {table}({insert_str}) values{insert_res_str};'
+                    insert_res_str = ','.join(['(' + str(i)[1:-1] + ')' for i in insert_res])
+                    # insert_res_str = str([tuple(i) for i in insert_res])
+                sql = f'INSERT INTO {table}({insert_str}) VALUES{insert_res_str}'
                 print(sql)
-                # cs.execute(sql)
+                cs.execute(sql)
             conn.commit()
         except MySQLdb.Error as e:
             print(e)
@@ -95,7 +98,7 @@ class DB:
                 values = list(update_dic.values())
                 values.extend(list(condition.values()))
                 with conn.cursor() as cs:
-                    cs.execute(sql, args=values)
+                    cs.execute(sql, values)
                     # if update_dic and condition is None:
                     #     sql = 'update {} set '.format(table) + ('="{}",'.join(update_dic.keys()) + '="{}"').format(
                     #         *update_dic.values()) + ' where 1=1'
@@ -141,29 +144,21 @@ class DB:
             conn.close()
 
 
-df = DB.filter('student', show_list=['name', 'class', 'age'], age=15)
-df.loc[df['name'] == '小明', 'age'] = 16
-rest = df.to_dict(orient='records')
-print(rest)
+data_txt = pd.read_csv('D:\\lik_test\\one.txt')
+create_col = data_txt.columns.tolist()
+create_col[4] = 'LON'
+create_res = np.array(data_txt[:]).tolist()
+DB.create('onehour', insert_list=create_col, insert_res=create_res)
+# 'STCD', 'VARCHAR(50)'
+# df = DB.filter('student', show_list=['name', 'class', 'age'], age=15)
+# df.loc[df['name'] == '小明', 'age'] = 16
+# rest = df.to_dict(orient='records')
+# print(rest)
 
 # df.loc[0, 'age'] = 16
 # print(df)
-# DB.create('student', insert_list=['name', 'class', 'age'],
-#           insert_res=[('小张', '三年级', '16'), ('小花', '四年级', '18'), ('小徐', '五年级', '19')])
+
 # DB.update('student', name='小徐', age=16)
 # con = {'name': '小徐', 'age': 16}
 # DB.delete('student', **con)
-# if __name__ == '__main__':
-#     a = [('a1', 'b1'), ('a2', 'b2'), ('a3', 'b3')]
-#     x = ','.join([str(i) for i in a])
-#     y = ['a', 'b']
-#     print(x)
-#     print(y)
-# if __name__ == '__main__':
-#     dic = {'a': 1, 'b': 2, 'c': 3}
-# update table set a=1,b=2
-# sql = 'update table set {}'.format(dic.keys())
-# print(sql)
-# x = '={},'.join(dic.keys()) + '={}'
-# x1 = x.format(*dic.values())
-# print(x1)
+
